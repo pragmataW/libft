@@ -1,0 +1,173 @@
+1- isalpha, isdigit, isalnum, isascii, isprint
+    Her biri birer parametre olarak birer karakter alır. Ancak karakter parametresini isterken "integer" olarak ister.
+    örnek olarak: int isalpha(int c); Böyle olamasının sebebi parametreyi gönderirken klavyedeki karakterle sınırlı kalmak yerine
+    ascii tablosundaki 500. karaktere de erişebilmektir. Zaten C dili tüm karakterleri integer olarak anlar.
+    
+    İsimlerinden de anlaşılacağı üzere isalpha karakterin a ve z arasında mı olduğunu, isdigit 0-9 arası mı olduğunu
+    isalnum karakterin hem 1-9 arasında hem de a-z arasında mı olduğunu, isascii karakterin ascii'de 0-127. karakterler
+    arasında mı olduğunu, isprint ise karakterin ekrana yazdırılabilir mi olduğunu sorgular. Returnleri 1 veya 0'dır. Örneğin eğer
+    isalpha fonksiyonuna 'a' gönderirsek return'umuz 1 olacaktır.
+    
+2- strlen
+    strlen fonksiyonu parametre olarak const char * alır. Yani sabit bir string alır.
+    Ve aldığı bu stringin toplam kaç karakterli olduğunu sayıp return eder. Yani return'u sayısal
+    bir değer olan "size_t'dir".
+    
+    NOT: size_t, unsigned long'un typedef edilmiş halidir. Negatif değer alamaz. Kullanım amacı
+    nesnelerin, dizilerin, stringlerin boyutunu ölçmektir. Başka bir programcı fonksiyonu okuduğunda
+    ve size_t ifadesini gördüğünde o değişkenin öylesine bir değişken değil de bir nesnenin boyutunu
+    ölçtüğünü anlayabilmelidir. Genel olarak size_t bu yüzden kullanılır.
+    
+3- memset
+    memset'in returnu void *'dır. Void görünce bir şey return etmiyor anlamına gelmez, return'u void bir pointer'dır. Daha detaylı değineceğim.
+    
+    void *memset(void *s, int c, size_t n); şeklinde tanımlanır. Bir string, bir karakter ve bir de sayısal değer alır.
+    fonksiyon aldığı c karakterini n kadar string'in üzerine yazar. Örneğin stringimiz "yusuf", karakterimiz "a", n ise 3 olsun. return'u "aaauf" stringi olacaktır.
+    
+    void * nedir? Void pointer tipi olmayan bir pointer'dır. C'de int *'de char *'de 8 byte'dır. Her pointer gibi void *'da sadece adres bilgisi
+    tutar bu yüzden 8 byte'dır. Void bir pointer'ı daha sonrasında bir char *'a veya int *'a atayabiliriz. Bize bu esnekliği sağlar. Bunun en bariz kullanımı
+    "malloc" fonksiyonun return'udur. Void * return eder ve biz bunu dilersek int *'a, dilersek başka bir pointer'a typecast edebiliriz.
+    
+    NOT: mem ile başlayan fonksiyonların str ile başlayan fonksiyonlardan farkı şudur, bir stringin diğer veri tiplerinden farkı son karakterinin null olmasıdır.
+    örneğin strcat fonksiyonunda belirtilen karakter kadar ilerleriz ancak eğer nulla ulaşırsak orada işlemi durdururuz. mem ile başlayan fonksiyonlarda
+    null kontrolü yoktur. örneğin memsette "n" sayısına 100 verseydik stringin boyutunu aşsa bile 100 "byte" ilerlemesini isteyecektik. Yani mem fonksiyonlarda
+    byte'a ve "memory"e göre kontrol yaparken, str fonksiyonlarda karakterlere göre kontrol yapılır.
+    
+4- bzero
+     void bzero(void *s, size_t n); şeklinde tanımlanır. Bir strin ve bir sayı alır. Aldığı sayı kadar veya null'a ulaşana kadar stringin tüm karakterlerini null yapar.
+     örneğin, bzero("yusuf", 3); -> çıktısı \0\0\0uf olacaktır.
+5- memcpy ve memmove
+    memcpy ve memmove temelde aynı işi yapar ve normal bir kullanımda %99 aynı çıktıyı verecektir. Ancak memmove önemli bir duruma karşı önlem alır, "overlap" veya üst üste binme
+    void *memmove(void *dest, const void *src, size_t n); ve void *memcpy(void *dest, const void *src, size_t n); şeklinde tanımlanır.
+    
+    src'in karakterlerini belirtilen sayı kadar dest'in karakterleriyle değiştirir. örneğin: memcpy("yusuf", "selam", 3) -> çıktısı seluf olacaktır.
+    yani strcpy gibi çalışır, ancak null kontrolü yapmaz.
+    
+    Overlap durumu ise karakterlerin üst üste binmesi durumudur. Örnek olarak dest'e de src'ye de aynı stringi gönderdiğimizi düşünelim. Stringimiz char *deneme"yusuf" olsun.
+    dest, &deneme[2] olsun, src ise direkt y harfinden sonrası olsun. Şuan dest "suf"u tutarken src "yusuf"'u tutuyor. 
+    1. adımda dest yuf olacaktır (src'nin ilk indexini dest'e kopyaladık)
+    2. adımda dest yine yuf olacaktır (src'nin ikinci indexinde de u karakteri olduğundan kopyalarken bir şey değişmedi)
+    3. adımda ise yuy olacak (parametre olarak aynı stringi gönderdiğimizden normalde f yerine s harfini koyması gerekirken y harfini koydu, çünkü kopyalama işlemi sırasında src'mizi bozduk)
+    
+    daha iyi anlamak için https://www.google.com/url?sa=i&url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F43088070%2Fmeaning-of-overlapping-when-using-memcpy&psig=AOvVaw20qeSdEVT62Licjjicj46Z&ust=1670516536531000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCNCK7Jf15_sCFQAAAAAdAAAAABAE görseline bakabilir veya overlap'ı araştırabilirsiniz.
+    
+6-strlcpy ve strlcat.
+    iki fonksiyon da bir dest, bir src, bir de sayı alır. strlcpy aynı memcpy gibi kopyalama işlemi yaparken (tek farkı null'u kontrol eder) strlcat iki stringi ard arda birleştirir.
+    örneğin: strlcat("yusuf", "selam", 6) -> "yusufselam" olacaktır. 
+    
+    DİKKAT: srtlcat fonksiyonuna 6 sayısını verirsem 5 tane kopyalayacaktır. iki fonksiyon da hep bir eksiği kadar işlem yapacaktır çünkü en son karaktere null koyacağını garantilemeni ister.
+    
+ 7- toupper ve tolower
+    isimlerinden de anlaşılacağı üzere ona gönderilen tek bir karakteri küçültüp büyültür. upper büyültürken lower küçültür.
+    int toupper(int c); şeklinde tanımlanırlar.
+    
+ 8- strchr ve strrchr
+    gönderilen string'in içinde ikinci parametre olarak gönderilen karakteri ararlar, eğer bulurlarsa oranın adresini return ederler. Tek farkı strrchr en sonda o karakteri ararken strchr en baştan arar
+    char *strchr(const char *s, int c); şeklinde tanımlanır.
+    
+9 - memchr
+    strchr ile aynı işlevi görür void *memchr(const char *s, int c, size_t n); şeklinde tanımlanır, n kadar byte'da arama yapar.
+    
+10-strnstr
+    iki adet string alır, ilk aldığı stringin içerisinde ikinci stringi arar. eğer bulursa oranın adresini return eder.
+    
+11- Atoi
+    ismi array to integer'dan gelir. gönderilen stringdeki sayısal ifadeyi int haline çevirip return eder. - ve + durumlarını da kontrol eder.
+    int atoi(const char *str); şeklinde tanımlanır.
+12- calloc
+    calloc, malloc'a çok benzer. 
+    void *calloc(size_t nmemb, size_t size); şeklinde tanımlanır. İki parametre alır, çarpımları kadar bellekte yer açar, bellekte açtığı yerin içerisini malloc'tan farklı olarak
+    "null" karakter ile doldurur ve bunu return eder.
+    
+13 - strdup
+    parametre olarak bir string alır, bu stringi duplicate eder. Ama bunu yaparken o string için malloc ile yer açar ve bunu bize return eder.
+    char *strdup(const char *s); şeklinde tanımlanır.
+    
+14 - substr
+    parametre olarak bir string, ve iki adet sayı alır. stringin ilk sayıda belirtilen karakterinden ikinci sayıda belirtilen sayı kadar kopyalar ve return eder.
+    örnek olarak: ft_substr("bilgisayar", 3, 6) -> çıktısı lgisay olacaktır. eğer ilk parametre ikinci parametreden büyükse ikinci parametreyi ilk parametreye eşitleyerek
+    işlem yaparız ki sorun çıkmasın 
+    
+15 - strjoin 
+    iki stringi yan yana koyar ancak strlcat'in aksine strjoin malloc ile alan açıp bu işlemi yapar. 
+    
+16 - strtrim
+    örnekle görsek daha iyi olacak, ft_strtrim("acbacbilgisayarbccaac", "abc") -> çıktısı bilgisayar olacaktır.
+    
+17 - split
+    char **ft_split(char const *s, char c); şeklinde tanımlanır
+    ona gönderilen karakter'i her gördüğünde stringi böler ve iki boyutlu bir dizinin içerisine atar
+    örneğin tek boyutlu bir array'de "yusuf, selam, ben mahmut" yazıyor. karakterimiz "," olsun. çıktısı "{yusuf}{selam}{ben mahmut}" çift boyutlu array'ı olacaktır, kg bro
+    
+18 - itoa
+    ismi integer to array'dan gelir, atoi'nin tam tersidir. bir integer'ı stringe çevirir.
+    char *ft_itoa(int n); şeklinde tanımlanır. 
+19 - strmapi ve striteri
+    char ft_strmapi(char const *s, char (*f)(unsigned int, char)); ve void ft_striteri(char *s, void (*f)(unsigned int, char)); şeklinde tanımlanırlar.
+    bir fonksiyona parametre olarak başka bir fonksiyonun nasıl gönderileceğini öğretmek amaçlanmıştır. void (*f)(unsigned int, char *) kısmı parametre olarak gönderdiğimiz fonksiyondur
+    
+    gönderilen fonksiyonu ilk parametrede aldıkları stringin tüm karakterlerine uygularlar (örneğin tolower fonksiyonunu gönderip stringin tüm karakterlerini küçük yapabilmeliyiz.)
+    
+    ikisinin farkı birinin return yapmıyor oluşu, diğerinin ise return yapıyor oluşudur. bu sebepten striteri'de daha fazla pointer kullanarak işlem yapmalıyız.
+    
+20 - putchar_fd putstr_fd, putendl_fd, putnbr_fd
+    putchar fd ile gönderilen dosyaya karakter yazdırır
+    putstr fd ile gönderilen dosyaya string yazdırır
+    putendl fd ile gönderilen dosyaya karakter yazdırır ve sonuna \n atar
+    putnbr fd ile gönderilen dosyaya int yazdırır
+    
+    her biri yazdıracağı şeyi ve hangi dosyaya yazdıracaksa o dosyanın file descriptorunu parametre alır.
+    
+    peki fd nedir? ve dosyayla nasıl işem yaparız? 
+    
+    fd, file descriptor anlamına gelmektedir. Yani dosyanın tanımlayıcısı hatta TC kimlik numarasıdır diyebiliriz.
+    biz open() fonksiyonu ile bir dosya açtığımızda, open fonksiyonu dosyayı oluşturmakla kalmayıp bize o dosya ile işlem yapabilmemiz için kimlik numarasını return eder.
+    örneğin: int fd = open("dosya.txt", O_WRONLY) yazarsak, bize dosya.txt'yi yalnızca yazdırılabilir modda açmakla kalmaz, fd'ye o dosyayının tanımlayıcısını atar. Ancak fd hiç bir zaman
+    0,1,2'den büyük olamaz. 0 1 ve 2 işletim sistemi tarafından tanımlanmış dosyalardır. 0 stdin yani read dosyaları, 1 stdout yani write dosyaları, 2 ise stderr yani error dosyaları için ayrılmıştır.
+    bu yüzden write(1, "a", 1) şeklinde kullanıyoruz. İlk parametrededeki "1" a karakterinin nereye yazdırılacağıdır. 1 verirsek stdout yani terminale, fd'mizi verirsek o dosyaya yazdıracaktır.
+    
+    daha ayrıntılı bilgi için: 
+    https://atessinan.wordpress.com/2012/02/24/sistem-programlama-2-open-close/ ve https://atessinan.wordpress.com/2012/03/03/sistem-programlama-3-write-read/ linklerine göz atabilirsiniz.
+    
+    ---------------BONUS---------------
+    
+NOT: bonus kısmı bize linked list veri yapısını öğretmeyi amaçlamaktadır. linked list konusunu detaylıca araştırırsak mükemmel olacaktır. Buradan her şeyi anlatmak mümkün değil.
+typedef struct s_list
+{
+    void *content;
+    struct s_list *next;
+}   t_list; 
+node ya da düğüm yani listemizin elemanlarının soyut olarak tanımı yukarıdaki gibi olmalıdır. bir adet content yani veri tutmalı ve kendinden sonraki düğümü gösterecek bir pointer tutmalıdır.
+1- ft_lstnew
+    t_list *ft_lstnew(void *content); şeklinde tanımlanır
+    
+    aldığı content parametresini taşıyan yeni bir düğüm oluşturur ve return eder
+    
+2- ft_lstadd_front
+    void ft_lstadd_front(t_list **lst, t_list *new); şeklinde tanımlanır. Listenin kendisini ve listeye eklenecek düğümü parametre olarak alır.
+    listenin başına gönderilen "new" parametresini ekler.
+    
+3- ft_lstsize
+    int ft_lstsize(t_list *lst); şeklinde tanımlanır.
+    parametre olarak aldığı listenin kaç elemanlı olduğunu return eder.
+    
+4- ft_lstlast
+    void ft_lstlast(t_list *lst); şeklinde tanımlanır
+    parametre olarak aldığı listenin  son elemanının adresini return eder. 
+    
+5- ft_lstadd_back
+    void ft_lstadd_back(t_list **lst, t_list *new); şeklinde tanımlanır.
+    parametre olarak aldığı listeye new parametresinde aldığı düğümü son eleman olarak ekler.
+    
+6- ft_lstdelone
+    void ft_lstdelone(t_list lst, void (*del)(void)); şeklinde tanımlanır, bir liste bir de silici fonksiyon parametre alır.
+    lst parametresi silinecek düğümün adresidir, f fonksiyonu kullanılarak silinir.
+    
+7- ft_lstclear
+    void ft_lstclear(t_list **lst, void (*del)(void *)); şeklinde tamamlanır
+    lstdelone'den farkı tek bir eleman değil, listenin tüm elemanlarını siler.
+    
+8- ft_lstiter ve ft_lstmap
+    void ft_lstiter(t_list *lst, void (*f)(void *)); ve t_list *ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *)); şeklinde tanımlanırlar.
+    
+    tamamen striteri ve strmapi ile aynı amaca hizmet ederler, yalnızca bir string yerine liste elemanının tüm  karakterlerine gönderilen fonksiyonu uygularız.
