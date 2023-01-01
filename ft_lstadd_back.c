@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstadd_back.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yciftci < yciftci@student.42kocaeli.com    +#+  +:+       +#+        */
+/*   By: yciftci <yciftci@student.42kocaeli.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/17 14:47:05 by yciftci           #+#    #+#             */
-/*   Updated: 2022/10/17 17:55:06 by yciftci          ###   ########.fr       */
+/*   Updated: 2023/01/01 21:22:41 by yciftci          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int main()
 	ft_lstadd_back(x,new3);
 	while (list)
 	{
-		
 		printf("%d\n", (int)list->content);
 		list = list->next;
 	}

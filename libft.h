@@ -6,7 +6,7 @@
 /*   By: yciftci <yciftci@student.42kocaeli.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 16:33:12 by yciftci           #+#    #+#             */
-/*   Updated: 2022/12/15 23:39:09 by yciftci          ###   ########.fr       */
+/*   Updated: 2023/01/01 21:44:41 by yciftci          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,15 @@ typedef struct s_list
 	void			*content;
 	struct s_list	*next;
 }					t_list;
+
+//for stack struct
+
+typedef struct s_stack
+{
+	int				x;
+	int				y;
+	struct s_stack	*next;			
+}				t_stack;
 
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
@@ -91,5 +100,8 @@ char	*get_raw_line(int fd, char *raw_str);
 char	*get_refined_str(char *raw_str);
 char	*get_new_raw_str(char *raw_str);
 char	*get_next_line(int fd);
-
+//stack data type functions
+void	ft_stack_push(t_stack **root, t_stack *new);
+t_stack	*ft_stack_new(int x, int y);
+t_stack	*ft_stack_pop(t_stack **root);
 #endif
